@@ -191,17 +191,3 @@ Combining both gives significantly better retrieval quality.
 * Deployment on Streamlit Cloud
 
 ---
-
-## Author
-
-Aryan Kulkarni
-
-BTech Computer Engineering
-
-Focused on AI Systems, RAG, LLM Applications, and Production ML Systems.
-
----
-
-## License
-
-This project is for educational and portfolio purposes.
