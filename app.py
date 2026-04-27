@@ -1,17 +1,26 @@
 import streamlit as st
-from loader import load_pdf, load_pdfs
+import tempfile
+
+from loader import load_pdfs
 from chunking import chunk_docs
 from vectorstore import create_vector_store
 from bm25_retriever import create_bm25
 from hybrid_search import hybrid_search
 from llm import create_llm
 from rag_pipeline import generate_answer
-from langchain_community.document_loaders import PyMuPDFLoader
 
-st.set_page_config(page_title="AI Exam Assistant", page_icon="", layout="wide")
 
-st.title("AI Exam Assistant")
-st.markdown("Ask exam-style questions from your study PDF using Hybrid RAG (Vector Search + BM25 + LLM).")
+st.set_page_config(
+    page_title="AI Exam Assistant",
+    page_icon="📘",
+    layout="wide"
+)
+
+st.title("📘 AI Exam Assistant")
+st.markdown(
+    "Upload one or more PDFs and generate structured exam-style answers using Hybrid RAG."
+)
+
 
 uploaded_files = st.file_uploader(
     "Upload your PDFs",
@@ -20,9 +29,11 @@ uploaded_files = st.file_uploader(
     help="Upload one or more study PDFs"
 )
 
+
 @st.cache_resource
-def initialize_pipeline(file_path):
-    docs = load_pdfs(file_path)
+def initialize_pipeline(file_paths):
+    docs = load_pdfs(file_paths)
+
     chunks = chunk_docs(docs)
 
     vectorstore = create_vector_store()
@@ -34,19 +45,20 @@ def initialize_pipeline(file_path):
         pass
 
     bm25, text_chunks = create_bm25(chunks)
+
     llm = create_llm()
 
     return vectorstore, bm25, text_chunks, llm
 
+
 query = st.text_area(
     "Enter your question",
     placeholder="Example: Explain Hard Computing vs Soft Computing for 10 marks",
-    height=120,
+    height=120
 )
 
-if uploaded_files:
-    import tempfile
 
+if uploaded_files:
     temp_pdf_paths = []
 
     for uploaded_file in uploaded_files:
@@ -61,38 +73,41 @@ if uploaded_files:
         temp_pdf_paths
     )
 
+    if st.button("Generate Answer", use_container_width=True):
+
+        if not query.strip():
+            st.warning("Please enter a question first.")
+
+        else:
+            with st.spinner(
+                "Retrieving relevant content and generating answer..."
+            ):
+
+                retrieved_docs = hybrid_search(
+                    vectorstore,
+                    bm25,
+                    query,
+                    text_chunks,
+                    k=4
+                )
+
+                final_answer = generate_answer(
+                    llm,
+                    retrieved_docs,
+                    query
+                )
+
+                if hasattr(final_answer, "content"):
+                    final_answer = final_answer.content
+
+            st.subheader("Generated Answer")
+            st.markdown(final_answer)
+
+            with st.expander("Retrieved Context"):
+                for i, doc in enumerate(retrieved_docs, 1):
+                    st.markdown(f"### Chunk {i}")
+                    st.write(doc)
+                    st.divider()
+
 else:
-    st.info("Please upload one or more PDFs to start.")
-
-
-
-if uploaded_files is not None and st.button("Generate Answer", use_container_width=True):
-    if not query.strip():
-        st.warning("Please enter a question first.")
-    else:
-        with st.spinner("Retrieving relevant content and generating answer..."):
-            retrieved_docs = hybrid_search(
-                vectorstore,
-                bm25,
-                query,
-                text_chunks,
-                k=4,
-            )
-
-            final_answer = generate_answer(
-                llm,
-                retrieved_docs,
-                query,
-            )
-
-            if hasattr(final_answer, "content"):
-                final_answer = final_answer.content
-
-        st.subheader("Generated Answer")
-        st.markdown(final_answer)
-
-        with st.expander("Retrieved Context"):
-            for i, doc in enumerate(retrieved_docs, 1):
-                st.markdown(f"### Chunk {i}")
-                st.write(doc)
-                st.divider()
+    st.info("Please upload one or more PDFs first.")
