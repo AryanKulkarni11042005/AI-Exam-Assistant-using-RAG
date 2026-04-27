@@ -38,17 +38,25 @@ def initialize_pipeline(file_path):
 
     return vectorstore, bm25, text_chunks, llm
 
-if uploaded_files is not None:
-    import os
+if uploaded_files:
     import tempfile
 
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
-        tmp_file.write(uploaded_files.read())
-        temp_pdf_path = tmp_file.name
+    temp_pdf_paths = []
 
-    vectorstore, bm25, text_chunks, llm = initialize_pipeline(temp_pdf_path)
+    for uploaded_file in uploaded_files:
+        with tempfile.NamedTemporaryFile(
+            delete=False,
+            suffix=".pdf"
+        ) as tmp_file:
+            tmp_file.write(uploaded_file.read())
+            temp_pdf_paths.append(tmp_file.name)
+
+    vectorstore, bm25, text_chunks, llm = initialize_pipeline(
+        temp_pdf_paths
+    )
+
 else:
-    st.info("Please upload a PDF to start asking questions.")
+    st.info("Please upload one or more PDFs to start.")
 
 query = st.text_area(
     "Enter your question",
