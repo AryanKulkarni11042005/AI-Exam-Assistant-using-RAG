@@ -1,0 +1,16 @@
+langchain
+langchain-core
+langchain-community
+python-dotenv
+requests
+pymupdf
+pypdf
+langchain-text-splitters
+sentence-transformers
+langchain-chroma
+langchain-huggingface
+rank-bm25
+langchain-groq
+streamlit
+torchvision
+torch
