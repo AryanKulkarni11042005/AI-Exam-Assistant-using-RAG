@@ -1,5 +1,5 @@
 import streamlit as st
-from loader import load_pdf
+from loader import load_pdf, load_pdfs
 from chunking import chunk_docs
 from vectorstore import create_vector_store
 from bm25_retriever import create_bm25
@@ -22,7 +22,7 @@ uploaded_files = st.file_uploader(
 
 @st.cache_resource
 def initialize_pipeline(file_path):
-    docs = load_pdf(file_path)
+    docs = load_pdfs(file_path)
     chunks = chunk_docs(docs)
 
     vectorstore = create_vector_store()
