@@ -38,6 +38,12 @@ def initialize_pipeline(file_path):
 
     return vectorstore, bm25, text_chunks, llm
 
+query = st.text_area(
+    "Enter your question",
+    placeholder="Example: Explain Hard Computing vs Soft Computing for 10 marks",
+    height=120,
+)
+
 if uploaded_files:
     import tempfile
 
@@ -58,11 +64,7 @@ if uploaded_files:
 else:
     st.info("Please upload one or more PDFs to start.")
 
-query = st.text_area(
-    "Enter your question",
-    placeholder="Example: Explain Hard Computing vs Soft Computing for 10 marks",
-    height=120,
-)
+
 
 if uploaded_files is not None and st.button("Generate Answer", use_container_width=True):
     if not query.strip():
