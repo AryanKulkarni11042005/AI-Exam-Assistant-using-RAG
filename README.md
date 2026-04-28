@@ -191,6 +191,5 @@ Combining both gives significantly better retrieval quality.
 * Re-ranking
 * Conversational memory
 * SQL + Vector Hybrid RAG
-* Deployment on Streamlit Cloud
 
 ---
