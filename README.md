@@ -103,8 +103,8 @@ AI-Exam-Assistant/
 ### 1. Clone Repository
 
 ```bash
-git clone <your-repo-link>
-cd AI-Exam-Assistant
+git clone https://github.com/AryanKulkarni11042005/AI-Exam-Assistant-using-RAG.git
+cd AI-Exam-Assistant-using-RAG
 ```
 
 ---
