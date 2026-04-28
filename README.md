@@ -69,6 +69,9 @@ Final Structured Answer
 ```
 
 ---
+## System Architecture
+
+![System Architecture](assets/architecture.png)
 
 ## Folder Structure
 
