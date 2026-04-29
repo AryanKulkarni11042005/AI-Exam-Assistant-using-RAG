@@ -39,7 +39,6 @@ def initialize_pipeline(file_paths):
     vectorstore = create_vector_store()
 
     try:
-        if vectorstore._collection.count() == 0:
             vectorstore.add_documents(chunks)
     except Exception:
         pass
